@@ -19,6 +19,7 @@
      */
     "source=${localWorkspaceFolderBasename}-dind-var-lib-docker,target=/var/lib/docker,type=volume"
   ],
+  "workspaceFolder": "/workspaces/instant-expert",
   "forwardPorts": [],
   "customizations": {
     "vscode": {
@@ -32,7 +33,12 @@
         },
         "eslint.codeActionsOnSave.rules": ["!@typescript-eslint/*", "*"],
         "typescript.tsdk": "node_modules/typescript/lib",
-        "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ],
         "files.exclude": {
           "**/.git": true,
           "**/.svn": true,

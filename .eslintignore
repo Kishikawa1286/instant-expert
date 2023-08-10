@@ -1,6 +1,8 @@
 .eslintrc.cjs
+*.config.cjs
 *.config.js
 *.config.ts
 
 dist
 node_modules
+*/.pnpm-store

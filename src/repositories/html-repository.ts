@@ -2,9 +2,12 @@ import { callFirebaseFunction } from '../helpers/firebase-functions-helper';
 import { convertHtmlToMarkdown } from '../utils/html-to-markdown';
 
 // type FetchHtmlParams = { url: string };
-// type FetchHtmlRes = { html: string } | { error: string };
+// type FetchHtmlRes = { html?: string; error?: string };
 const fetchHtml = async (url: string) => {
-  const result = await callFirebaseFunction('fetch_html', { url });
+  const result = await callFirebaseFunction<
+    { url: string },
+    { html?: string; error?: string }
+  >('fetch_html', { url });
   const { data } = result;
   if (!data) {
     throw new Error('No data returned');

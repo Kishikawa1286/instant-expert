@@ -3,39 +3,26 @@ var tsConfigs = ['./tsconfig.json'];
 var ruleOverrides = {};
 
 module.exports = {
-  overrides: [
-    {
-      extends: [
-        'eslint:recommended',
-        'plugin:@typescript-eslint/recommended',
-        'prettier',
-        'plugin:tailwindcss/recommended',
-        'plugin:import/typescript',
-        'plugin:react-hooks/recommended',
-      ],
-      parser: '@typescript-eslint/parser',
-      sourceType: 'module',
-      parserOptions: {
-        project: tsConfigs,
-        sourceType: 'module',
-      },
-      plugins: ['@typescript-eslint', 'prettier', 'promise'],
-      rules: {
-        'prettier/prettier': 'error',
-      },
-      files: ['src/*.ts', 'src/*.tsx'],
-    },
-    {
-      extends: ['eslint:recommended', 'plugin:import/typescript'],
-      parserOptions: {
-        sourceType: 'module',
-      },
-      files: ['./*.mjs', './*.js'],
-      rules: ruleOverrides,
-    },
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
+    'plugin:tailwindcss/recommended',
+    'plugin:import/typescript',
+    'plugin:react-hooks/recommended',
   ],
-  env: {
-    es6: true,
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: tsConfigs,
+    ecmaVersion: 2020,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+    },
+    allowImportExportEverywhere: true,
   },
-  root: true,
+  plugins: ['@typescript-eslint', 'prettier', 'promise'],
+  rules: {
+    'prettier/prettier': 'error',
+  },
 };
