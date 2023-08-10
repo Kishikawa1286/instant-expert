@@ -14,11 +14,12 @@ module.exports = {
         'plugin:react-hooks/recommended',
       ],
       parser: '@typescript-eslint/parser',
+      sourceType: 'module',
       parserOptions: {
         project: tsConfigs,
+        sourceType: 'module',
       },
       plugins: ['@typescript-eslint', 'prettier', 'promise'],
-      sourceType: 'module',
       rules: {
         'prettier/prettier': 'error',
       },

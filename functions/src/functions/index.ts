@@ -1,1 +1,1 @@
-export { fetchHtml as fetch_html } from './fetch_html';
+export { fetchHtml as fetch_html } from './fetch-html';
