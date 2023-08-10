@@ -6,7 +6,7 @@ export const config = {
 };
 
 export default async (request: VercelRequest, response: VercelResponse) => {
-  const targetURL = request.query.url;
+  const { url: targetURL } = request.body;
 
   if (!targetURL) {
     return response.status(400).json({ error: 'URL is required' });
