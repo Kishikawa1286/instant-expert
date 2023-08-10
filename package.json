@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": false,
   "license": "Apache-2.0",
-  "type": "module",
   "scripts": {
     "build": "tsc && vite build",
     "check-updates": "npm-check-updates",
