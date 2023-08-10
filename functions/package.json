@@ -1,0 +1,26 @@
+{
+  "name": "functions",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "pnpm run build && firebase emulators:start --only functions",
+    "shell": "pnpm run build && firebase functions:shell",
+    "start": "pnpm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "@google-cloud/functions-framework": "3.3.0",
+    "browserless": "10.1.6",
+    "firebase-admin": "11.10.1",
+    "firebase-functions": "4.4.1"
+  },
+  "devDependencies": {
+    "typescript": "5.1.6"
+  },
+  "private": true
+}
