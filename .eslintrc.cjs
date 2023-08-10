@@ -18,10 +18,11 @@ module.exports = {
         project: tsConfigs,
       },
       plugins: ['@typescript-eslint', 'prettier', 'promise'],
+      sourceType: 'module',
       rules: {
         'prettier/prettier': 'error',
       },
-      files: ['*.ts', '*.tsx'],
+      files: ['src/*.ts', 'src/*.tsx'],
     },
     {
       extends: ['eslint:recommended', 'plugin:import/typescript'],
