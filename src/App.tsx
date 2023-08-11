@@ -1,24 +1,48 @@
-import { useEffect, useState } from 'react';
 import {
-  ISummary,
+  Box,
+  Card,
+  CardContent,
+  Container,
+  LinearProgress,
+  Tab,
+  Tabs,
+  ThemeProvider,
+  Typography,
+  createTheme,
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+import ChatBox from './components/ChatBox';
+import MemoryInput from './components/MemoryInput';
+import TenantSelection from './components/TenantSelection';
+import {
   ITenant,
   addMemory,
   addTenant,
   deleteTenant,
   getAllTenants,
-  searchMemory,
 } from './repositories/memory-repository';
+import { createChatManager } from './repositories/web-llm-repository';
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
 
 const App = () => {
   const [urls, setUrls] = useState('');
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<ISummary[]>([]);
   const [selectedTenantId, setSelectedTenantId] = useState<number | null>(null);
   const [tenants, setTenants] = useState<ITenant[]>([]);
   const [newTenantName, setNewTenantName] = useState('');
   const [isAccordionOpen, setAccordionOpen] = useState(false);
+  const [currentTab, setCurrentTab] = useState<number>(0);
+  const [completedURLs, setCompletedURLs] = useState<number>(0);
+  const [totalURLs, setTotalURLs] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleDeleteTenant = async (tenantId: number | undefined) => {
+  const chatManagerInstance = createChatManager();
+
+  const handleDeleteTenant = async (tenantId: number | null) => {
     if (!tenantId) {
       return;
     }
@@ -27,11 +51,26 @@ const App = () => {
     setTenants(updatedTenants);
   };
 
-  const handleSearch = async () => {
-    if (selectedTenantId && query) {
-      const searchResults = await searchMemory(selectedTenantId, query, 10);
-      setResults(searchResults);
+  const handleAddMemory = async () => {
+    let currentTenantId = selectedTenantId;
+
+    setIsLoading(true);
+    const urlList = urls.split('\n').filter((url) => url.trim() !== '');
+    setTotalURLs((prevTotal) => prevTotal + urlList.length);
+
+    if (selectedTenantId === -1 && newTenantName) {
+      currentTenantId = await addTenant(newTenantName);
+      const updatedTenants = await getAllTenants();
+      setTenants(updatedTenants);
     }
+
+    if (currentTenantId) {
+      for (const url of urlList) {
+        await addMemory(url, currentTenantId);
+      }
+      setCompletedURLs((prevCompleted) => prevCompleted + urlList.length);
+    }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -42,137 +81,103 @@ const App = () => {
     fetchTenants();
   }, []);
 
-  const handleAddMemory = async () => {
-    let currentTenantId = selectedTenantId;
-
-    // If "New Tenant" is selected, create a new tenant and use its ID
-    if (selectedTenantId === -1 && newTenantName) {
-      currentTenantId = await addTenant(newTenantName);
-      const updatedTenants = await getAllTenants();
-      setTenants(updatedTenants);
-    }
-
-    if (currentTenantId) {
-      const urlList = urls.split('\n').filter((url) => url.trim() !== '');
-      for (const url of urlList) {
-        await addMemory(url, currentTenantId);
-      }
-    }
-  };
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-900">
-      <div className="w-96 rounded-xl bg-gray-800 p-8 shadow-lg">
-        <h1 className="mb-4 text-2xl text-white">URL 入力</h1>
+    <ThemeProvider theme={darkTheme}>
+      <Container
+        component="main"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100vw',
+          height: '100vh',
+          maxWidth: 'none',
+        }}
+      >
+        <Card
+          style={{
+            backgroundColor: '#4a4a4a',
+            paddingLeft: '40px',
+            paddingRight: '40px',
+            width: '80%',
+            height: '85%',
+            maxWidth: 800,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <CardContent>
+            <Typography
+              component="h1"
+              variant="h4"
+              style={{ textAlign: 'center', marginBottom: '10px' }}
+            >
+              Instant Expert
+            </Typography>
 
-        <div className="mb-4">
-          <label className="mb-2 block text-white">テナントを選択</label>
-
-          <div
-            className="w-full cursor-pointer rounded-md border bg-gray-700 p-2 text-white"
-            onClick={() => setAccordionOpen(!isAccordionOpen)}
-          >
-            {selectedTenantId
-              ? tenants.find((t) => t.id === selectedTenantId)?.name
-              : 'テナントを選択してください'}
-          </div>
-
-          {isAccordionOpen && (
-            <div className="max-h-40 w-full overflow-y-auto rounded-md border-y">
-              {tenants.map((tenant) => (
-                <div
-                  className="flex items-center justify-between p-2 hover:bg-gray-700"
-                  key={tenant.id}
-                >
-                  <span
-                    onClick={() => setSelectedTenantId(tenant.id ?? null)}
-                    className="cursor-pointer"
-                  >
-                    {tenant.name}
-                  </span>
-                  <button onClick={() => handleDeleteTenant(tenant.id)}>
-                    x
-                  </button>
-                </div>
-              ))}
-              <div
-                className="p-2 hover:bg-gray-700"
-                onClick={() => setSelectedTenantId(-1)}
-              >
-                新しいテナント
-              </div>
-            </div>
-          )}
-        </div>
-
-        {selectedTenantId === -1 && (
-          <div className="mb-4">
-            <label className="mb-2 block text-white">新しいテナント名</label>
-            <input
-              type="text"
-              placeholder="テナント名"
-              value={newTenantName}
-              onChange={(e) => setNewTenantName(e.target.value)}
-              className="w-full rounded-md border-2 border-gray-700 p-2 focus:border-blue-500 focus:outline-none"
+            <TenantSelection
+              tenants={tenants}
+              selectedTenantId={selectedTenantId}
+              setSelectedTenantId={setSelectedTenantId}
+              newTenantName={newTenantName}
+              setNewTenantName={setNewTenantName}
+              isAccordionOpen={isAccordionOpen}
+              setAccordionOpen={setAccordionOpen}
+              handleDeleteTenant={handleDeleteTenant}
+              completedURLs={completedURLs}
+              totalURLs={totalURLs}
             />
-          </div>
-        )}
 
-        <div className="mb-4">
-          <label className="mb-2 block text-white">URLs</label>
-          <textarea
-            rows={5}
-            placeholder="URLを改行で区切って入力してください"
-            value={urls}
-            onChange={(e) => setUrls(e.target.value)}
-            className="w-full rounded-md border-2 border-gray-700 p-2 focus:border-blue-500 focus:outline-none"
-          ></textarea>
-        </div>
+            <Tabs
+              value={currentTab}
+              onChange={(_event, newValue) => setCurrentTab(newValue)}
+              variant="fullWidth"
+            >
+              <Tab label="Memory" />
+              <Tab label="Chat" />
+            </Tabs>
 
-        <div className="mb-4 flex">
-          <button
-            onClick={handleAddMemory}
-            className="w-full bg-blue-500 p-2 text-white hover:bg-blue-600"
-          >
-            メモリに追加
-          </button>
-        </div>
-
-        <div className="mb-4">
-          <label className="mb-2 block text-white">検索クエリ</label>
-          <input
-            type="text"
-            placeholder="検索クエリを入力してください"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded-md border-2 border-gray-700 p-2 focus:border-blue-500 focus:outline-none"
-          />
-        </div>
-
-        <div className="mb-4 flex">
-          <button
-            onClick={() => handleSearch()}
-            className="w-full bg-blue-500 p-2 text-white hover:bg-blue-600"
-          >
-            検索
-          </button>
-        </div>
-
-        {results.length > 0 && (
-          <div>
-            <h2 className="mt-4 text-xl text-white">検索結果</h2>
-            {results.map((result, index) => (
-              <div key={index} className="mt-2 text-white">
-                <a href={result.url} target="_blank" rel="noopener noreferrer">
-                  {result.url}
-                </a>
-                <p>{result.summary}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+            {currentTab === 0 && (
+              <>
+                {totalURLs > 0 && (
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    width="100%"
+                    marginTop="16px"
+                  >
+                    <Typography
+                      variant="caption"
+                      align="center"
+                      style={{ margin: '3px 0' }}
+                    >
+                      {`${completedURLs} / ${totalURLs} Pages Completed`}
+                    </Typography>
+                    <LinearProgress
+                      variant="determinate"
+                      value={(completedURLs / totalURLs) * 100}
+                    />
+                  </Box>
+                )}
+                <MemoryInput
+                  urls={urls}
+                  setUrls={setUrls}
+                  handleAddMemory={handleAddMemory}
+                  isLoading={isLoading}
+                />
+              </>
+            )}
+            {currentTab === 1 && selectedTenantId && (
+              <ChatBox
+                manager={chatManagerInstance}
+                tenantId={selectedTenantId}
+              />
+            )}
+          </CardContent>
+        </Card>
+      </Container>
+    </ThemeProvider>
   );
 };
 

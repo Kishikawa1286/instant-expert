@@ -1,12 +1,24 @@
-import { ChatManager, chatManager } from '../helpers/web-llm/web-llm-helper';
+import {
+  ChatManager as _ChatManager,
+  chatManager,
+} from '../helpers/web-llm/web-llm-helper';
 import { executeSequentially } from '../utils/execute-sequentially';
 import { splitMarkdownToChunks } from '../utils/split-markdown';
 
 export { modelNames } from '../helpers/web-llm/llm-config';
 
+export type ChatManager = _ChatManager;
+
+export const createChatManager = () =>
+  chatManager('Llama-2-7b-chat-hf-q4f32_1', {
+    repetition_penalty: 1,
+    top_p: 0.95,
+    temperature: 0.7,
+  });
+
 export const getChatResponse = async (
   prompt: string,
-  manager: ChatManager,
+  manager: _ChatManager,
   progressCallback?: (step: number, currentMessage: string) => void,
 ): Promise<string> => {
   try {
@@ -21,6 +33,14 @@ export const getChatResponse = async (
       return 'Error generating chat response';
     }
   }
+};
+
+export const resetChat = async (manager: _ChatManager): Promise<void> => {
+  await manager.resetChat();
+};
+
+export const interruptChat = (manager: _ChatManager): void => {
+  manager.interrupt();
 };
 
 const summarizePrompt = (text: string): string =>

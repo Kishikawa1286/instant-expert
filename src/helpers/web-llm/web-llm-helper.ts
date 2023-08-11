@@ -17,8 +17,8 @@ export class ChatManager {
   private config: AppConfig = appConfig;
   private selectedModel: string;
   private chatOptions: ChatOptions;
-  private chatLoaded = false;
 
+  public chatLoaded = false;
   public requestInProgress = false;
 
   constructor(
@@ -62,6 +62,10 @@ export class ChatManager {
 
   public async resetChat() {
     await this.chat.resetChat();
+  }
+
+  public interrupt() {
+    this.chat.interruptGenerate();
   }
 
   public async generate(
