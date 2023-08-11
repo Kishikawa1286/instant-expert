@@ -1,8 +1,30 @@
 import TurndownService from 'turndown';
 
+const removeUnwantedTags = (html: string, tagsToRemove: string[]) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  tagsToRemove.forEach((tag) => {
+    Array.from(doc.querySelectorAll(tag)).forEach((element) => {
+      element.remove();
+    });
+  });
+
+  return doc.body.innerHTML;
+};
+
 export const convertHtmlToMarkdown = (html: string) => {
   // Create an instance of the Turndown service
   const turndownService = new TurndownService();
+
+  // Remove unwanted tags
+  html = removeUnwantedTags(html, [
+    'style',
+    'script',
+    'iframe',
+    'video',
+    'audio',
+  ]);
 
   // Find the position of the first h tag
   const firstHTagIndex = Math.min(
