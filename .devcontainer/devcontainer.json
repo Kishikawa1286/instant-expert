@@ -21,6 +21,7 @@
   ],
   "workspaceFolder": "/workspaces/instant-expert",
   "forwardPorts": [],
+  "runArgs": ["--memory=6gb"],
   "customizations": {
     "vscode": {
       "settings": {

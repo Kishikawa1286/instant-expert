@@ -113,7 +113,7 @@ const App = () => {
               variant="h4"
               style={{ textAlign: 'center', marginBottom: '10px' }}
             >
-              Instant Expert
+              Easy RAG
             </Typography>
 
             <TenantSelection

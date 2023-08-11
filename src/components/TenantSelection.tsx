@@ -86,7 +86,7 @@ const TenantSelection: React.FC<TenantSelectionProps> = ({
                 variant="outlined"
                 margin="dense"
                 id="newTenantName"
-                label="New Tenant Name"
+                label="New Wxpert Name"
                 value={newTenantName}
                 onChange={(e) => setNewTenantName(e.target.value)}
                 size="small"
