@@ -7,32 +7,29 @@ export const splitMarkdownToChunks = (
   let currentChunk = '';
 
   for (const line of lines) {
-    if (line.length > maxLength) {
-      let startIndex = 0;
-      while (startIndex < line.length) {
-        const subLine = line.substring(startIndex, maxLength);
-        if (currentChunk.length + subLine.length > maxLength) {
-          chunks.push(currentChunk);
-          currentChunk = subLine;
-        } else {
-          currentChunk += subLine;
-        }
-        startIndex += maxLength;
+    let lineIndex = 0;
+    while (lineIndex < line.length) {
+      const spaceLeft = maxLength - currentChunk.length;
+      const endIndex = Math.min(lineIndex + spaceLeft, line.length);
+      const subLine = line.substring(lineIndex, endIndex);
+
+      currentChunk += subLine;
+
+      if (currentChunk.length >= maxLength) {
+        chunks.push(currentChunk.trim());
+        currentChunk = '';
       }
-      continue;
+
+      lineIndex = endIndex;
     }
 
-    if (currentChunk.length + line.length > maxLength) {
-      chunks.push(currentChunk);
-      currentChunk = line + '\n';
-      continue;
+    if (currentChunk.length > 0) {
+      currentChunk += '\n';
     }
-
-    currentChunk += line + '\n';
   }
 
   if (currentChunk) {
-    chunks.push(currentChunk);
+    chunks.push(currentChunk.trim());
   }
 
   return chunks;

@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChatInterface, ChatWorkerClient, ModelRecord } from '@mlc-ai/web-llm';
+import {
+  ChatInterface,
+  ChatOptions,
+  ChatWorkerClient,
+  ModelRecord,
+} from '@mlc-ai/web-llm';
 import { ModelName, appConfig } from './llm-config';
 
 interface AppConfig {
@@ -11,13 +16,19 @@ export class ChatManager {
   private chat: ChatInterface;
   private config: AppConfig = appConfig;
   private selectedModel: string;
+  private chatOptions: ChatOptions;
   private chatLoaded = false;
 
   public requestInProgress = false;
 
-  constructor(chat: ChatInterface, selectedModel: string) {
+  constructor(
+    chat: ChatInterface,
+    selectedModel: string,
+    chatOptions: ChatOptions,
+  ) {
     this.chat = chat;
     this.selectedModel = selectedModel;
+    this.chatOptions = chatOptions;
   }
 
   private async asyncInitChat() {
@@ -30,7 +41,7 @@ export class ChatManager {
         throw Error('model_lib_map is not defined');
       }
       if (this.selectedModel != 'Local Server') {
-        await this.chat.reload(this.selectedModel, undefined, {
+        await this.chat.reload(this.selectedModel, this.chatOptions, {
           model_list: this.config.model_list,
           model_lib_map,
         });
@@ -81,10 +92,11 @@ export class ChatManager {
   }
 }
 
-export const chatManager = (model: ModelName) =>
+export const chatManager = (model: ModelName, chatOptions: ChatOptions) =>
   new ChatManager(
     new ChatWorkerClient(
       new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' }),
     ),
     model,
+    chatOptions,
   );

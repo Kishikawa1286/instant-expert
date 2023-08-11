@@ -24,6 +24,13 @@ export const convertHtmlToMarkdown = (html: string) => {
     'iframe',
     'video',
     'audio',
+    'nav',
+    'header',
+    'footer',
+    'aside',
+    'form',
+    'input',
+    'button',
   ]);
 
   // Find the position of the first h tag
