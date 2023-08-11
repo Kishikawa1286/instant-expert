@@ -4,6 +4,8 @@
 
 Easy RAG is a web application that utilizes the RAG architecture, running directly on your browser using WebGPU to harness the power of local GPU.
 
+You can try it [here](https://instant-agent.web.app/)!
+
 ## Prerequisites
 
 - Compatible with `devcontainer` or `GitHub Codespaces`.
