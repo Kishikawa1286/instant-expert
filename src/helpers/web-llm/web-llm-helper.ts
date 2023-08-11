@@ -44,7 +44,7 @@ export class ChatManager {
     }
   }
 
-  private async unloadChat() {
+  public async unloadChat() {
     await this.chat.unload();
     this.chatLoaded = false;
   }

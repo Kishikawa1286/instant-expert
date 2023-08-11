@@ -31,6 +31,7 @@ const summarizePrompt = (text: string): string =>
 The text will be provided in Markdown format, generated from a website, and may be partial if too long.
 Create a summary in English, regardless of the original language, in no more than 500 words.
 If the meaning of the text is unclear, provide a very short explanation.
+Indicate the language name in parentheses at the beginning of the generated summary, like "(Spanish) ...".
 If program code is provided, give a concise description of the input, output, and the main purpose of the code.
   
 \`\`\`
@@ -52,5 +53,6 @@ export const summarize = async (
     await manager.resetChat();
     return summary;
   });
+  await manager.unloadChat();
   return summaries;
 };
