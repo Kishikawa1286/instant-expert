@@ -36,10 +36,10 @@ export const summarize = async (text: string): Promise<string[]> => {
       seps: ['\n', '```'],
       roles: ['USER', 'ASSISTANT'],
     },
-    repetition_penalty: 1,
+    repetition_penalty: 2,
     top_p: 0.97,
-    temperature: 0.6,
-    mean_gen_len: 550,
+    temperature: 0.3,
+    mean_gen_len: 150,
   });
   const summaries = await executeSequentially(chunks, async (chunk) => {
     const summary = await getChatResponse(
