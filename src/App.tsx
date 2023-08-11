@@ -168,11 +168,22 @@ const App = () => {
                 />
               </>
             )}
-            {currentTab === 1 && selectedTenantId && (
-              <ChatBox
-                manager={chatManagerInstance}
-                tenantId={selectedTenantId}
-              />
+            {currentTab === 1 && (
+              <>
+                {selectedTenantId ? (
+                  <ChatBox
+                    manager={chatManagerInstance}
+                    tenantId={selectedTenantId}
+                  />
+                ) : (
+                  <Typography
+                    variant="h6"
+                    style={{ marginTop: '20px', textAlign: 'center' }}
+                  >
+                    To start a chat, please select an expert.
+                  </Typography>
+                )}
+              </>
             )}
           </CardContent>
         </Card>

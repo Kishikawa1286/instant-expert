@@ -46,7 +46,7 @@ const TenantSelection: React.FC<TenantSelectionProps> = ({
         <Typography>
           {selectedTenantId
             ? tenants.find((t) => t.id === selectedTenantId)?.name
-            : 'Please select a tenant'}
+            : 'Please select an expert'}
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
